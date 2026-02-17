@@ -40,6 +40,22 @@ const listar_publicacion_id = async (id_publicacion) => {
         WHERE p.id_publicacion = ?;
     `, [id_publicacion]);
 
+    const [total_reacciones] = await conexion.execute(`SELECT COUNT(*) as total_reacciones FROM reaccion WHERE id_publicacion = ?`, [id_publicacion])
+
+    const [info_reacciones] = await conexion.execute(`
+        SELECT 
+        u.id_usuario as reaccion_autor_id,
+        u.nombre_usuario as reaccion_autor_nombre_usuario,
+        u.correo as reaccion_autor_correo,
+        u.avatar as reaccion_autor_avatar
+        FROM reaccion r
+        INNER JOIN usuario u
+        ON r.id_usuario = u.id_usuario
+        WHERE id_publicacion = ?
+    `, [id_publicacion]);
+
+    const [total_comentarios] = await conexion.execute('SELECT COUNT(*) as total_comentarios FROM comentario WHERE id_publicacion = ?', [id_publicacion]);
+
     const [info_comentarios] = await conexion.execute(`
         SELECT 
         -- ================== COMENTARIO ==================
@@ -63,8 +79,12 @@ const listar_publicacion_id = async (id_publicacion) => {
 
     const resultado = {
         publicacion: info_publicacion[0] || null,
+        total_reacciones,
+        informacion_reacciones: info_reacciones,
+        total_comentarios,
         comentarios: info_comentarios
     };
+
     return resultado;
 }
 
