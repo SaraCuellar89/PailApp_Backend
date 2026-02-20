@@ -17,6 +17,22 @@ const crear_usuario = async (datos) => {
 }
 
 
+// Buscar usuario con inicio de sesion con google
+const buscar_usuario_google = async (google_id) => {
+    const [resultado] = await conexion.execute("SELECT * FROM usuario WHERE google_id = ?", [google_id]);
+
+    return resultado;
+};
+
+
+// Crear usuario con google
+const crear_usuario_google = async (datos) => {
+  const {nombre_usuario, correo, contrasena, avatar, google_id} = datos;
+
+  await conexion.execute('INSERT INTO usuario (nombre_usuario, correo, contrasena, avatar, proveedor, google_id) VALUES(?, ?, ?, ?, "google", ?)', [nombre_usuario, correo, contrasena, avatar, google_id]);
+};
+
+
 // Obtener usuario por ID
 const obtener_usuario_id = async (id_usuario) => {
     const [resultado] = await conexion.execute('SELECT * FROM usuario WHERE id_usuario = ?', [id_usuario]);
@@ -46,6 +62,8 @@ const eliminar_usuario = async (id_usuario) => {
 module.exports = {
     buscar_usuario_correo,
     crear_usuario,
+    buscar_usuario_google,
+    crear_usuario_google,
     obtener_usuario_id,
     actualizar_usuario,
     eliminar_usuario

@@ -48,17 +48,27 @@ const transporter = nodemailer.createTransport({
 });
 
 // Función para enviar correo
-const enviar_correo_registro = async (destinatario, nombre) => {
+const enviar_correo_incio_sesion = async (destinatario, nombre) => {
   const mailOptions = {
     from: `"PailApp" <${process.env.EMAIL_USER}>`,
     to: destinatario,
-    subject: "Cuenta registrada correctamente",
+    subject: "Inicio de Sesion exitoso",
     html: `
-      <h2>¡Hola ${nombre}!</h2>
-      <p>Tu cuenta fue registrada correctamente.</p>
-      <p>Ya puedes iniciar sesión en nuestra plataforma.</p>
-      <br>
-      <small>Este es un mensaje automático.</small>
+      <h2>¡Hola ${nombre}! 👋</h2> 
+
+      <p>¡Nos alegra verte de nuevo! 🎉</p> 
+
+      <p>Has iniciado sesión correctamente y ya puedes comenzar a explorar nuevos platos deliciosos que tenemos para ti. 🍽️✨</p> 
+
+      <p>Prepárate para descubrir sabores increíbles y vivir una experiencia gastronómica única.</p> <br> 
+
+      <div style="text-align:center;"> 
+        <img src="http://st.depositphotos.com/1001911/1554/v/450/depositphotos_15540341-stock-illustration-thumb-up-emoticon.jpg" alt="Todo listo" width="120"> 
+      </div> 
+      
+      <br> 
+      
+      <p style="font-size:12px; color:gray;"> Este es un mensaje automático, por favor no respondas a este correo. </p>
     `
   };
 
@@ -73,5 +83,5 @@ module.exports = {
     comparar_contrasena,
     generar_token,
     verificar_token,
-    enviar_correo_registro
+    enviar_correo_incio_sesion
 }

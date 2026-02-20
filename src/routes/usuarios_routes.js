@@ -6,6 +6,7 @@ const {auth} = require('../middlewares/index')
 // ================== Importacion de Controladores ==================
 const {registrar_usuarios, 
     iniciar_sesion,
+    iniciar_sesion_google,
     informacion_usuario_token, 
     editar_cuenta,
     eliminar_cuenta} = require("../controllers/usuarios_controller")
@@ -17,6 +18,8 @@ const {registrar_usuarios,
 router.post('/registrar', registrar_usuarios);
 // Iniciar sesion
 router.post('/iniciar_sesion', iniciar_sesion);
+// Iniciar sesion Google
+router.post('/iniciar_sesion_google', iniciar_sesion_google);
 // Buscar informacion de un usuario en sesion por medio del token
 router.get('/usuario_logueado', auth, informacion_usuario_token)
 // Editar la informacion de la cuenta

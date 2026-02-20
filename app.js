@@ -1,5 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const cors = require("cors");
+const passport = require("passport")
 
 
 // ================== Middlewares ==================
@@ -8,8 +10,14 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Varibles de entorno
 dotenv.config();
+
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
+
+app.use(passport.initialize());
 
 
 // ================== Importacion de Rutas ==================
