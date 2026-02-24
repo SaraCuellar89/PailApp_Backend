@@ -4,9 +4,14 @@ const {respuesta_exito,
     respuesta_error_servidor} = require('../utils/responses');
 
 
+// ================== Importacion de servicios ==================
+const {notificar} = require('../services/notificaciones');
+
+
 // ================== Importacion de modelos ==================
 const {listar_todos_comentarios,
     crear_comentario,
+    buscar_comentario,
     listar_comentario_id,
     actualizar_comentario,
     eliminar_comentario} = require('../models/comentarios_model');
@@ -20,9 +25,25 @@ const subir_comentario = async (req, res) => {
         const {id_publicacion} = req.params;
         const id_usuario = req.usuario.id_usuario;
 
-        await crear_comentario({contenido, id_usuario, id_publicacion});
+        const comentario = await crear_comentario({contenido, id_usuario, id_publicacion});
 
-        return respuesta_exito(res, "Comentario subido correctamente", 201);
+        const resultado = await buscar_comentario(comentario[0].id_comentario)
+
+        const data = {
+            id_autor_publicacion: resultado.id_autor_publicacion,
+            nombre_autor_publicacion: resultado.nombre_autor_publicacion,
+            id_publicacion_reaccionada: resultado.id_publicacion_reaccionada,
+            usuario_emisor: id_usuario
+        }
+
+        await notificar({
+            tipo: 'comentario',
+            id_usuario: data.id_autor_publicacion, 
+            id_emisor: id_usuario, 
+            id_publicacion: data.id_publicacion_reaccionada
+        })
+
+        return respuesta_exito(res, "Comentario subido correctamente", 201, comentario);
     }
     catch(error){
         return respuesta_error_servidor(res, error, "No se pudo subir el comentario");

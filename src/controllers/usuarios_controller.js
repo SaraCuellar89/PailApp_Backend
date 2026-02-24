@@ -3,7 +3,8 @@ const {encriptar_contrasena,
     comparar_contrasena,
     generar_token,
     verificar_token,
-    enviar_correo_incio_sesion} = require('../services/index')
+    enviar_correo_registro,
+    enviar_correo_vinculacion} = require('../services/index')
 
 
 // ================== Importacion de Google ==================
@@ -25,7 +26,8 @@ const {buscar_usuario_correo,
     crear_usuario_google,
     actualizar_usuario,
     obtener_usuario_id,
-    eliminar_usuario} = require('../models/usuarios_model')
+    eliminar_usuario,
+    cambiar_tipo_cuenta} = require('../models/usuarios_model')
 
 
 // ================== Funciones del controlador ==================
@@ -49,7 +51,9 @@ const registrar_usuarios = async (req, res) => {
 
         await crear_usuario({nombre_usuario, correo, contrasena:contrasena_encriptada, avatar});
 
-        return respuesta_exito(res, 'Usuario registrado correctamente', 201)
+        enviar_correo_registro(correo, nombre_usuario).catch(console.error);
+
+        return respuesta_exito(res, 'Usuario registrado correctamente', 201);
     }
     catch(error){
         return respuesta_error_servidor(res, error, 'No se pudo completar el registro')
@@ -91,8 +95,6 @@ const iniciar_sesion = async(req, res) => {
             token: token
         }
 
-        // await enviar_correo_incio_sesion(data.correo, data.nombre);
-
         return respuesta_exito(res, 'Inicio de sesion exitoso', 200, data)
     }
     catch(error){
@@ -123,24 +125,44 @@ const iniciar_sesion_google = async (req, res) => {
 
         const { sub, email, name, picture } = payload;
 
+        let nuevo_usuario = false;
+
         let usu = await buscar_usuario_google(sub);
 
         if (usu.length === 0) {
+            nuevo_usuario = true;
+
             const existente = await buscar_usuario_correo(email);
 
             if (existente.length > 0) {
-                return respuesta_error(res, 'Este correo ya está registrado con contraseña', 400);
+                // Vincular cuenta existente con Google
+                await cambiar_tipo_cuenta({
+                    google_id: sub,
+                    id_usuario: existente[0].id_usuario
+                });
+
+                usu = await buscar_usuario_google(sub);
+
+                enviar_correo_vinculacion(email, name).catch(console.error);
+
+                return respuesta_exito(res, 'Vinculación con Google exitosa', 200, usu);
+            } 
+            else{
+                // Crear usuario nuevo
+                await crear_usuario_google({
+                    nombre_usuario: name,
+                    correo: email,
+                    contrasena: null,
+                    avatar: picture,
+                    google_id: sub
+                });
+
+                usu = await buscar_usuario_google(sub);
+
+                enviar_correo_registro(email, name).catch(console.error);
+
+                return respuesta_exito(res, 'Usuario registro correctamente', 201, usu);
             }
-
-            await crear_usuario_google({
-                nombre_usuario: name,
-                correo: email,
-                contrasena: null,
-                avatar: picture,
-                google_id: sub
-            });
-
-            usu = await buscar_usuario_google(sub);
         }
 
         const usuario = usu[0];
@@ -154,8 +176,6 @@ const iniciar_sesion_google = async (req, res) => {
             avatar: usuario.avatar,
             token: token_app
         };
-
-        // await enviar_correo_incio_sesion(data.correo, data.nombre);
 
         return respuesta_exito(res, 'Inicio con Google exitoso', 200, data);
     } 

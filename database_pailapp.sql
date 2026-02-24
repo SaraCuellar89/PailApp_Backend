@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-02-2026 a las 03:54:25
+-- Tiempo de generación: 24-02-2026 a las 03:30:54
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -35,16 +35,6 @@ CREATE TABLE `comentario` (
   `id_publicacion` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `comentario`
---
-
-INSERT INTO `comentario` (`id_comentario`, `contenido`, `fecha_creacion`, `id_usuario`, `id_publicacion`) VALUES
-(2, 'hola', '2026-02-13 02:04:59', 3, 1),
-(3, 'solo estaño', '2026-02-13 02:06:36', 9, 1),
-(4, 'no se', '2026-02-13 02:13:28', 4, 1),
-(5, 'no se', '2026-02-13 02:37:13', 4, 3);
-
 -- --------------------------------------------------------
 
 --
@@ -53,8 +43,7 @@ INSERT INTO `comentario` (`id_comentario`, `contenido`, `fecha_creacion`, `id_us
 
 CREATE TABLE `notificacion` (
   `id_notificacion` int(5) NOT NULL,
-  `tipo` enum('like','comentario') DEFAULT NULL,
-  `contenido` varchar(255) DEFAULT NULL,
+  `tipo` enum('like','comentario','guardado') DEFAULT NULL,
   `fecha_creacion` timestamp NULL DEFAULT current_timestamp(),
   `id_usuario` int(5) NOT NULL,
   `id_emisor` int(5) NOT NULL,
@@ -74,19 +63,12 @@ CREATE TABLE `publicacion` (
   `ingredientes` text DEFAULT NULL,
   `preparacion` text DEFAULT NULL,
   `archivo` varchar(255) DEFAULT NULL,
+  `public_id` varchar(250) DEFAULT NULL,
   `tiempo_preparacion` int(5) DEFAULT NULL,
   `dificultad` varchar(20) DEFAULT NULL,
   `fecha_creacion` timestamp NULL DEFAULT current_timestamp(),
   `id_usuario` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `publicacion`
---
-
-INSERT INTO `publicacion` (`id_publicacion`, `titulo`, `descripcion`, `ingredientes`, `preparacion`, `archivo`, `tiempo_preparacion`, `dificultad`, `fecha_creacion`, `id_usuario`) VALUES
-(1, '<h1>Bandeja Paisa Tradicional</h1>', '<p>La <strong>bandeja paisa</strong> es uno de los platos más representativos de Colombia, originario de la región <em>antioqueña</em>. Se caracteriza por su abundancia y variedad de ingredientes, siendo un símbolo de la cultura gastronómica del país.</p><p>Este plato es ideal para ocasiones especiales o reuniones familiares debido a su gran porción.</p>', '<ul><li>Frijoles rojos cocidos</li><li>Arroz blanco</li><li>Carne molida sazonada</li><li>Chicharrón crocante</li><li>Chorizo antioqueño</li><li>Huevo frito</li><li>Aguacate en rodajas</li><li>Arepa blanca</li><li>Morcilla</li><li>Plátano maduro frito</li></ul>', '<ol><li>Cocinar los <strong>frijoles</strong> con aliños hasta que estén blandos.</li><li>Preparar el <em>arroz blanco</em> de manera tradicional.</li><li>Sofreír la carne molida con cebolla, tomate y especias.</li><li>Freír el chicharrón hasta que quede crocante.</li><li>Cocinar el chorizo en sartén o parrilla.</li><li>Freír el huevo en aceite caliente.</li><li>Servir todos los ingredientes en una bandeja grande, acompañando con arepa y aguacate.</li></ol>', 'https://misrecetas.com/imagenes/bandeja-paisa.jpg', 90, '<span class=\'badge b', '2026-02-12 23:25:28', 3),
-(3, 'Arroz Atollado', '<p>El <strong>arroz atollado</strong> es un plato típico del suroccidente colombiano, especialmente del Valle del Cauca. Se caracteriza por su textura húmeda y cremosa, resultado de la mezcla de arroz con carnes, papas y especias cocidas lentamente.</p>', '<ul><li>2 tazas de arroz</li><li>300 g de pollo en trozos</li><li>200 g de costilla de cerdo</li><li>150 g de chorizo</li><li>2 papas medianas picadas</li><li>1 tomate grande picado</li><li>1 cebolla larga picada</li><li>2 dientes de ajo</li><li>4 tazas de caldo de pollo</li><li>Color o achiote al gusto</li><li>Sal y pimienta</li><li>Cilantro fresco</li></ul>', '<ol><li>Sofríe la cebolla, el tomate, el ajo y el achiote en una olla grande.</li><li>Agrega el pollo, la costilla y el chorizo. Cocina por unos minutos.</li><li>Incorpora las papas y el arroz, mezclando bien con el sofrito.</li><li>Vierte el caldo de pollo y cocina a fuego medio.</li><li>Remueve ocasionalmente hasta que el arroz esté blando y húmedo.</li><li>Ajusta sal y pimienta, y añade cilantro fresco antes de servir.</li></ol>', 'arroz_atollado.jpg', 60, 'Media', '2026-02-13 01:20:30', 7);
 
 -- --------------------------------------------------------
 
@@ -139,17 +121,6 @@ CREATE TABLE `usuario` (
   `proveedor` enum('local','google') DEFAULT 'local',
   `google_id` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `usuario`
---
-
-INSERT INTO `usuario` (`id_usuario`, `nombre_usuario`, `correo`, `contrasena`, `avatar`, `proveedor`, `google_id`) VALUES
-(3, 'Elend Venture', 'Elend_Venture@gmail.com', '$2b$10$5.8vkHFpYO567SH4XK3EkOnYl8ovY/YyH3igY9Ag1njbfKBcDUlkK', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTom3WXt5CUzE_XG1ysNyFHjsW-uTUo9CxtHw&s', 'local', NULL),
-(4, 'Vin', 'herodelaseras@gmail.com', '$2b$10$7sON0YkreG.kkHKlvShJmuD9uIAgqxc1A.3I6qF.W0KFS2SeIsohq', 'https://i.pinimg.com/736x/b6/8f/43/b68f43f7869a5952ded721e41eebe129.jpg', 'local', NULL),
-(7, 'Kelsier', 'kell@gmail.com', '$2b$10$UwTep0l5JkfNPrrnaSVE6OYLCj.prReR62VHtjOZpaues0.LcujrK', NULL, 'local', NULL),
-(8, 'Sazed', 'guardador_1@gmail.com', '$2b$10$E3tHARLO1NcMJhqcZmCdqeP.h7pQvQ5UudO6V3oMDerKQIeTeuVtG', NULL, 'local', NULL),
-(9, 'Fantasma', 'fantasma@gmail.com', '$2b$10$71iK8E1Id2nQnDU9hAIQDuwWhjngBjto/apIOOqeRMA0FeeNF0JrS', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIfUgVs-NUh8hGyrnv8jYVgmVhxyOzAitYdQ&s', 'local', NULL);
 
 --
 -- Índices para tablas volcadas
@@ -216,7 +187,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `comentario`
 --
 ALTER TABLE `comentario`
-  MODIFY `id_comentario` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_comentario` int(5) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `notificacion`
@@ -228,7 +199,7 @@ ALTER TABLE `notificacion`
 -- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `id_publicacion` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_publicacion` int(5) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `respuesta_comentario`
@@ -240,7 +211,7 @@ ALTER TABLE `respuesta_comentario`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id_usuario` int(5) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restricciones para tablas volcadas

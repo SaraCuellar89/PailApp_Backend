@@ -1,3 +1,6 @@
+const cloudinary = require('../config/config_cloudinary');
+const streamifier = require('streamifier');
+
 // ================== Importacion de funciones de error o exito ================== 
 const {respuesta_exito,
     respuesta_error,
@@ -17,10 +20,38 @@ const {crear_publicacion,
 // Subir una publicacion
 const subir_publicacion = async (req, res) => {
     try{
-        const {titulo, descripcion, ingredientes, preparacion,  archivo, tiempo_preparacion, dificultad} = req.body;
+        const {titulo, descripcion, ingredientes, preparacion, tiempo_preparacion, dificultad} = req.body;
         const id_usuario = req.usuario.id_usuario;
 
-        await crear_publicacion({titulo, descripcion, ingredientes, preparacion,  archivo, tiempo_preparacion, dificultad, id_usuario});
+        let archivo = null;
+        let public_id = null;
+
+        if (req.file) {
+
+            const resultado = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    {
+                        folder: 'archivos',
+                        resource_type: 'auto',
+                        transformation: [
+                            { width: 1080, crop: "limit" },
+                            { quality: "auto" }
+                        ]
+                    },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+
+                streamifier.createReadStream(req.file.buffer).pipe(stream);
+            });
+
+            archivo = resultado.secure_url;
+            public_id = resultado.public_id;
+        }
+
+        await crear_publicacion({titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, dificultad, id_usuario});
 
         const data = {titulo, descripcion, ingredientes, preparacion,  archivo, tiempo_preparacion, dificultad, id_usuario}
 
@@ -54,6 +85,8 @@ const obtener_publicacion_id = async (req, res) => {
 
         const resultado = await listar_publicacion_id(id_publicacion);
 
+        console.log(resultado.publicacion.publicacion_public_id)
+
         if (resultado.length === 0) {
             return respuesta_error(res, 'Esa publicacion no existe', 404);
         }
@@ -69,10 +102,48 @@ const obtener_publicacion_id = async (req, res) => {
 // Editar una publicacion
 const editar_publicacion = async (req, res) => {
     try{
-        const {titulo, descripcion, ingredientes, preparacion, archivo, tiempo_preparacion, dificultad} = req.body;
+        const {titulo, descripcion, ingredientes, preparacion, tiempo_preparacion, dificultad} = req.body;
         const {id_publicacion} = req.params;
 
-        await actualizar_publicacion({titulo, descripcion, ingredientes, preparacion, archivo, tiempo_preparacion, dificultad, id_publicacion});
+        const publicacion_actual = await listar_publicacion_id(id_publicacion);
+
+        let archivo = publicacion_actual.publicacion?.publicacion_archivo ?? null;
+        let public_id = publicacion_actual.publicacion?.publicacion_public_id ?? null;
+
+        if (req.file) {
+
+            const resultado = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    {
+                        folder: 'archivos',
+                        resource_type: 'auto',
+                        transformation: [
+                            { width: 1080, crop: "limit" },
+                            { quality: "auto" }
+                        ]
+                    },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+
+                streamifier.createReadStream(req.file.buffer).pipe(stream);
+            });
+
+            archivo = resultado.secure_url;
+            public_id = resultado.public_id;
+
+            // borrar imagen anterior
+            if (publicacion_actual.publicacion.publicacion_public_id) {
+                await cloudinary.uploader.destroy(
+                    publicacion_actual.publicacion.publicacion_public_id,
+                    { resource_type: "image" }
+                );
+            }
+        }
+
+        await actualizar_publicacion({titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, dificultad, id_usuario});
 
         return respuesta_exito(res, 'Publicacion editada correctamente', 200);
     }
@@ -81,9 +152,19 @@ const editar_publicacion = async (req, res) => {
     }
 }
 
+
+// Borrar una publicacion
 const borrar_publicacion = async (req, res) => {
     try{
         const {id_publicacion} = req.params;
+
+        const resultado = await listar_publicacion_id(id_publicacion);
+
+        if(resultado.publicacion.publicacion_public_id){
+            const resultadoCloudinary = await cloudinary.uploader.destroy(resultado.publicacion.publicacion_public_id, {
+                resource_type: "image"
+            });
+        }
 
         await eliminar_publicacion(id_publicacion);
 

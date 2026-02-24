@@ -4,6 +4,10 @@ const {respuesta_exito,
     respuesta_error_servidor} = require('../utils/responses');
 
 
+// ================== Importacion de servicios ==================
+const {notificar} = require('../services/notificaciones');
+
+
 // ================== Importacion de modelos ==================
 const {crear_plato_guardado,
     buscar_plato_guardado,
@@ -21,13 +25,29 @@ const guardar_plato = async (req, res) => {
 
         const buscar = await buscar_plato_guardado({id_usuario, id_publicacion});
 
-        if(buscar.length > 0){
+        if(buscar.existe.length > 0){
             await eliminar_plato_guardado({id_usuario, id_publicacion});
             
             return respuesta_exito(res, "Plato Guardado eliminado correctamente", 200);
         }
 
         await crear_plato_guardado({id_usuario, id_publicacion});
+
+        const resultado = await buscar_plato_guardado({id_usuario, id_publicacion});
+
+        const data = {
+            id_autor_publicacion: resultado.info_plato_guardado.id_autor_publicacion,
+            nombre_autor_publicacion: resultado.info_plato_guardado.nombre_autor_publicacion,
+            id_publicacion_reaccionada: resultado.info_plato_guardado.id_publicacion_reaccionada,
+            usuario_emisor: id_usuario
+        }
+
+        await notificar({
+            tipo: 'guardado',
+            id_usuario: data.id_autor_publicacion, 
+            id_emisor: id_usuario, 
+            id_publicacion: data.id_publicacion_reaccionada
+        });
 
         return respuesta_exito(res, "Plato Guardado correctamente", 200);
     }

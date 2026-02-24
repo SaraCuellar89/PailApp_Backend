@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { auth } = require('../middlewares');
+const upload = require('../middlewares/upload');
 
 
 // ================== Importacion de Controladores ==================
@@ -14,13 +15,13 @@ const {subir_publicacion,
 // ================== Rutas ==================
 
 // Subir publicacion
-router.post('/subir', auth, subir_publicacion);
+router.post('/subir', auth, upload.single('archivo'), subir_publicacion);
 // Obtener todas las publicaciones
 router.get('/todas', obtener_todas_publicaciones);
 // Obtener una publicacion por su ID
 router.get('/una/:id_publicacion', obtener_publicacion_id);
 // Editar publicacion
-router.put('/editar/:id_publicacion', editar_publicacion);
+router.put('/editar/:id_publicacion', upload.single('archivo'), editar_publicacion);
 // Eliminar publicacion
 router.delete('/eliminar/:id_publicacion', borrar_publicacion);
 

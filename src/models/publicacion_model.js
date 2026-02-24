@@ -3,9 +3,9 @@ const conexion = require('../config/databse');
 
 // Crear una publicacion
 const crear_publicacion = async (datos) => {
-    const {titulo, descripcion, ingredientes, preparacion, archivo, tiempo_preparacion, dificultad, id_usuario} = datos;
+    const {titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, dificultad, id_usuario} = datos;
 
-    await conexion.execute('INSERT INTO publicacion (titulo, descripcion, ingredientes, preparacion, archivo, tiempo_preparacion, dificultad, id_usuario) VALUES(?, ?, ?, ?, ?, ?, ?, ?)', [titulo, descripcion, ingredientes, preparacion,  archivo, tiempo_preparacion, dificultad, id_usuario]);
+    await conexion.execute('INSERT INTO publicacion (titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, dificultad, id_usuario) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)', [titulo, descripcion, ingredientes, preparacion,  archivo, public_id, tiempo_preparacion, dificultad, id_usuario]);
 }
 
 
@@ -26,7 +26,11 @@ const listar_publicacion_id = async (id_publicacion) => {
         p.titulo                AS publicacion_titulo,
         p.descripcion           AS publicacion_descripcion,
         p.ingredientes          AS publicacion_ingredientes,
+        p.preparacion           AS publicacion_preparacion,
         p.archivo               AS publicacion_archivo,
+        p.public_id             AS publicacion_public_id,
+        p.tiempo_preparacion    AS publicacion_tiempo_preparacion,
+        p.dificultad            AS publicacion_dificultad,
         p.fecha_creacion        AS publicacion_fecha,
         p.id_usuario            AS publicacion_autor_id,
         -- ================== AUTOR DEL POST ==================
@@ -91,9 +95,9 @@ const listar_publicacion_id = async (id_publicacion) => {
 
 // Actualizar publicacion
 const actualizar_publicacion = async (datos) => {
-    const {titulo, descripcion, ingredientes, preparacion, archivo, tiempo_preparacion, dificultad, id_publicacion} = datos;
+    const {titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, dificultad, id_publicacion} = datos;
 
-    await conexion.execute('UPDATE publicacion SET titulo = ?, descripcion = ?, ingredientes = ?, preparacion = ?, archivo = ?, tiempo_preparacion = ?, dificultad = ? WHERE id_publicacion = ?', [titulo, descripcion, ingredientes, preparacion,  archivo, tiempo_preparacion, dificultad, id_publicacion]); 
+    await conexion.execute('UPDATE publicacion SET titulo = ?, descripcion = ?, ingredientes = ?, preparacion = ?, archivo = ?, public_id = ?, tiempo_preparacion = ?, dificultad = ? WHERE id_publicacion = ?', [titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, dificultad, id_publicacion]); 
 }
 
 

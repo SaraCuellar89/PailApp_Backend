@@ -26,7 +26,8 @@ const rutas_publicaciones = require('./src/routes/publicacion_routes');
 const rutas_comentarios = require('./src/routes/comentarios_routes');
 const rutas_reacciones = require('./src/routes/reacciones_routes');
 const rutas_guardados = require('./src/routes/guardados_routes');
-const rutas_respuestas = require('./src/routes/respuestas_routes')
+const rutas_respuestas = require('./src/routes/respuestas_routes');
+const rutas_notificaciones = require('./src/routes/notificaciones_routes');
 
 
 // ================== Rutas ==================
@@ -47,6 +48,8 @@ app.use('/reacciones', rutas_reacciones);
 app.use('/guardados', rutas_guardados);
 // Respuestas a comentarios
 app.use('/respuestas', rutas_respuestas);
+// Notificaciones
+app.use('/notificaciones', rutas_notificaciones);
 
 
 // ================== Escucha del puerto (numero de puerto en .evn) ================== 

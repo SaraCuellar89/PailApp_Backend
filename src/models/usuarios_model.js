@@ -33,6 +33,14 @@ const crear_usuario_google = async (datos) => {
 };
 
 
+// Pasar de cuenta local a cuenta con google
+const cambiar_tipo_cuenta = async (datos) => {
+    const {google_id, id_usuario} = datos;
+
+    await conexion.execute("UPDATE usuario SET google_id = ?, proveedor = 'google' WHERE id_usuario = ?", [google_id, id_usuario]);
+}
+
+
 // Obtener usuario por ID
 const obtener_usuario_id = async (id_usuario) => {
     const [resultado] = await conexion.execute('SELECT * FROM usuario WHERE id_usuario = ?', [id_usuario]);
@@ -66,5 +74,6 @@ module.exports = {
     crear_usuario_google,
     obtener_usuario_id,
     actualizar_usuario,
-    eliminar_usuario
+    eliminar_usuario,
+    cambiar_tipo_cuenta
 }

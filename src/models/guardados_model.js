@@ -13,9 +13,26 @@ const crear_plato_guardado = async (datos) => {
 const buscar_plato_guardado = async (datos) => {
     const {id_usuario, id_publicacion} = datos;
     
-    const [resultado] = await conexion.execute('SELECT * FROM publicacion_guardada WHERE id_usuario = ? AND id_publicacion = ?', [id_usuario, id_publicacion]);
+    const [existe] = await conexion.execute('SELECT * FROM publicacion_guardada WHERE id_usuario = ? AND id_publicacion = ?', [id_usuario, id_publicacion]);
 
-    return resultado;
+    const [info_plato_guardado] = await conexion.execute(`
+        SELECT 
+            u.id_usuario AS id_autor_publicacion,
+            u.nombre_usuario as nombre_autor_publicacion,
+
+            p.id_publicacion as id_publicacion_reaccionada
+        FROM publicacion_guardada pg
+            INNER JOIN publicacion p ON pg.id_publicacion = p.id_publicacion
+            INNER JOIN usuario u ON p.id_usuario = u.id_usuario
+        WHERE pg.id_usuario = ?  AND pg.id_publicacion = ?
+    `, [id_usuario, id_publicacion])
+
+    const data = {
+        existe, 
+        info_plato_guardado: info_plato_guardado[0] || null
+    }
+
+    return data;
 }
 
 

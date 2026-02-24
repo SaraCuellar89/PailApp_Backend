@@ -5,7 +5,32 @@ const conexion = require('../config/databse');
 const crear_comentario = async(datos) => {
     const {contenido, id_usuario, id_publicacion} = datos;
 
-    await conexion.execute('INSERT INTO comentario (contenido, id_usuario, id_publicacion) VALUES(?, ?, ?)', [contenido, id_usuario, id_publicacion]);
+    const [resultado] = await conexion.execute('INSERT INTO comentario (contenido, id_usuario, id_publicacion) VALUES(?, ?, ?)', [contenido, id_usuario, id_publicacion]);
+
+    const id_comentario = resultado.insertId;
+
+    const [comentario] = await conexion.execute(`SELECT * FROM comentario WHERE id_comentario = ?`, [id_comentario]);
+
+    return comentario;
+}
+
+
+// Buscar comentario (obtener informacion para enviar notificiaciones)
+const buscar_comentario = async (id_comentario) => {
+
+    const [info_comentario] = await conexion.execute(`
+        SELECT 
+            u.id_usuario AS id_autor_publicacion,
+            u.nombre_usuario as nombre_autor_publicacion,
+
+            p.id_publicacion as id_publicacion_reaccionada
+        FROM comentario c
+            INNER JOIN publicacion p ON c.id_publicacion = p.id_publicacion
+            INNER JOIN usuario u ON p.id_usuario = u.id_usuario
+        WHERE c.id_comentario = ?
+    `, [id_comentario])
+
+    return info_comentario[0];
 }
 
 
@@ -79,6 +104,7 @@ const eliminar_comentario = async (id_comentario) => {
 module.exports = {
     listar_todos_comentarios,
     crear_comentario,
+    buscar_comentario,
     listar_comentario_id,
     actualizar_comentario,
     eliminar_comentario
