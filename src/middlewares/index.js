@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
 const SECRET = process.env.JWT_SECRET;
 
@@ -26,6 +26,7 @@ const auth = (req, res, next) => {
 
     const decoded = jwt.verify(token, SECRET);
 
+    // Pasar la información del usuario autenticado a req.usuario para usarla en el backend
     req.usuario = decoded;
 
     next();

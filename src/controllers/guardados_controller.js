@@ -42,6 +42,7 @@ const guardar_plato = async (req, res) => {
             usuario_emisor: id_usuario
         }
 
+        // Llamar al servicio de noticiacion
         await notificar({
             tipo: 'guardado',
             id_usuario: data.id_autor_publicacion, 

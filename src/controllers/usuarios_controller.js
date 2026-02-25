@@ -27,7 +27,11 @@ const {buscar_usuario_correo,
     actualizar_usuario,
     obtener_usuario_id,
     eliminar_usuario,
-    cambiar_tipo_cuenta} = require('../models/usuarios_model')
+    cambiar_tipo_cuenta} = require('../models/usuarios_model');
+
+
+// ================== Importacion de Helpers ==================
+const {construir_data_usuario} = require('../helpers/usuario_helper');
 
 
 // ================== Funciones del controlador ==================
@@ -87,13 +91,8 @@ const iniciar_sesion = async(req, res) => {
         // Generar token
         const token = generar_token(usuario)
 
-        const data = {
-            id: usuario.id_usuario,
-            nombre: usuario.nombre_usuario,
-            correo: usuario.correo,
-            avatar: usuario.avatar,
-            token: token
-        }
+        // Funcion para automatizar la creacion de la data de un usuario
+        const data = construir_data_usuario(usuario, token);
 
         return respuesta_exito(res, 'Inicio de sesion exitoso', 200, data)
     }
@@ -123,7 +122,7 @@ const iniciar_sesion_google = async (req, res) => {
             return respuesta_error(res, 'Correo no verificado en Google', 403);
         }
 
-        const { sub, email, name, picture } = payload;
+        const {sub, email, name, picture} = payload;
 
         let nuevo_usuario = false;
 
@@ -143,25 +142,27 @@ const iniciar_sesion_google = async (req, res) => {
 
                 usu = await buscar_usuario_google(sub);
 
+                const token_app = generar_token(usu[0]);
+
+                const data = construir_data_usuario(usu[0], token_app);
+
                 enviar_correo_vinculacion(email, name).catch(console.error);
 
-                return respuesta_exito(res, 'Vinculación con Google exitosa', 200, usu);
+                return respuesta_exito(res, 'Vinculación con Google exitosa', 200, data);
             } 
             else{
                 // Crear usuario nuevo
-                await crear_usuario_google({
-                    nombre_usuario: name,
-                    correo: email,
-                    contrasena: null,
-                    avatar: picture,
-                    google_id: sub
-                });
+                await crear_usuario_google({nombre_usuario: name, correo: email, contrasena: null, avatar: picture, google_id: sub});
 
                 usu = await buscar_usuario_google(sub);
 
+                const token_app = generar_token(usu[0]);
+
+                const data = construir_data_usuario(usu[0], token_app);
+
                 enviar_correo_registro(email, name).catch(console.error);
 
-                return respuesta_exito(res, 'Usuario registro correctamente', 201, usu);
+                return respuesta_exito(res, 'Usuario registro correctamente', 201, data);
             }
         }
 
@@ -169,13 +170,7 @@ const iniciar_sesion_google = async (req, res) => {
 
         const token_app = generar_token(usuario);
 
-        const data = {
-            id: usuario.id_usuario,
-            nombre: usuario.nombre_usuario,
-            correo: usuario.correo,
-            avatar: usuario.avatar,
-            token: token_app
-        };
+        const data = construir_data_usuario(usuario, token_app);
 
         return respuesta_exito(res, 'Inicio con Google exitoso', 200, data);
     } 

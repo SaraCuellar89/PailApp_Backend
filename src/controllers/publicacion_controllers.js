@@ -23,11 +23,13 @@ const subir_publicacion = async (req, res) => {
         const {titulo, descripcion, ingredientes, preparacion, tiempo_preparacion, dificultad} = req.body;
         const id_usuario = req.usuario.id_usuario;
 
+        // Por si el usuario no sube ningun archivo, estos campos se guardan como nulos en la bbdd
         let archivo = null;
         let public_id = null;
 
         if (req.file) {
 
+            // Funcion para cargar una el arhivo a cloudinary, transformarlo si es necesario y generar la url y el public id 
             const resultado = await new Promise((resolve, reject) => {
                 const stream = cloudinary.uploader.upload_stream(
                     {
@@ -51,12 +53,12 @@ const subir_publicacion = async (req, res) => {
             public_id = resultado.public_id;
         }
 
+        
         await crear_publicacion({titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, dificultad, id_usuario});
 
         const data = {titulo, descripcion, ingredientes, preparacion,  archivo, tiempo_preparacion, dificultad, id_usuario}
 
         return respuesta_exito(res, 'Publicacion subida correctamente', 201, data);
-
     }
     catch(error){
         return respuesta_error_servidor(res, error, 'No se pudo subir la publicacion');
@@ -160,6 +162,7 @@ const borrar_publicacion = async (req, res) => {
 
         const resultado = await listar_publicacion_id(id_publicacion);
 
+        // borrar imagen de cloudinary
         if(resultado.publicacion.publicacion_public_id){
             const resultadoCloudinary = await cloudinary.uploader.destroy(resultado.publicacion.publicacion_public_id, {
                 resource_type: "image"

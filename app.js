@@ -53,6 +53,8 @@ app.use('/notificaciones', rutas_notificaciones);
 
 
 // ================== Escucha del puerto (numero de puerto en .evn) ================== 
-app.listen(process.env.PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${process.env.PORT}`);
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

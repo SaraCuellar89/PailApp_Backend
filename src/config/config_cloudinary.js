@@ -1,3 +1,5 @@
+// Configuracion de cloudinary para la gestion de archivos de los usaurios
+
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
