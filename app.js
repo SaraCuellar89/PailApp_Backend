@@ -40,7 +40,7 @@ app.get('/', (req, res) => {
 // Usuarios
 app.use('/usuarios', rutas_usuario);
 // Publicaciones
-app.use('/publicacion', rutas_publicaciones);
+app.use('/publicaciones', rutas_publicaciones);
 // Comentarios
 app.use('/comentarios', rutas_comentarios);
 // Reacciones

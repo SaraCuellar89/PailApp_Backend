@@ -46,17 +46,11 @@ const listar_todos_comentarios = async (id_publicacion) => {
 const listar_comentario_id = async (id_comentario) => {
     const [info_comentario] = await conexion.execute('SELECT * from comentario WHERE id_comentario = ?', [id_comentario]);
 
-    const id_publicacion = info_comentario[0].id_publicacion;
-
     const [total_respuestas] = await conexion.execute(`
         SELECT 
             COUNT(*) as total_respuestas
         FROM respuesta_comentario
-        WHERE id_comentario IN (
-            SELECT id_comentario 
-            FROM comentario 
-            WHERE id_publicacion = ?
-    )`, [id_publicacion]);
+        WHERE id_comentario = ?`, [id_comentario]);
 
     const [info_respuestas] = await conexion.execute(`
         SELECT
@@ -70,11 +64,7 @@ const listar_comentario_id = async (id_comentario) => {
         FROM respuesta_comentario r
         INNER JOIN usuario u
             ON r.id_usuario = u.id_usuario
-        WHERE r.id_comentario IN (
-            SELECT id_comentario 
-            FROM comentario 
-            WHERE id_publicacion = ?
-        )`, [id_publicacion]);
+        WHERE r.id_comentario = ?`, [id_comentario]);
 
     return {
         Comentario: info_comentario,

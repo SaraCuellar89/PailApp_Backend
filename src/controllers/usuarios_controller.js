@@ -193,8 +193,7 @@ const informacion_usuario_token = async(req, res) => {
 const editar_cuenta = async(req, res) => {
     try{
         const {nombre_usuario, correo, contrasena, confirmacion_contrasena, avatar} = req.body;
-        const {id_usuario} = req.params;
-
+        const id_usuario = req.usuario.id_usuario;
 
         const existencia = await obtener_usuario_id(id_usuario);
 
@@ -221,7 +220,7 @@ const editar_cuenta = async(req, res) => {
 // Eliminar cuenta del usuario
 const eliminar_cuenta = async(req, res) => {
     try{
-        const {id_usuario} = req.params;
+        const id_usuario = req.usuario.id_usuario;
 
         const existencia = await obtener_usuario_id(id_usuario);
 

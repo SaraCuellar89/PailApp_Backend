@@ -9,6 +9,24 @@ const crear_noticiacion = async (datos) => {
 }
 
 
+// Buscar si la notificacion es igual a otras
+const buscar_notificacion = async (datos) => {
+    const {tipo, id_emisor, id_publicacion} = datos;
+
+    const [resultado] = await conexion.execute('SELECT * FROM notificacion WHERE tipo = ? AND id_emisor = ? AND id_publicacion = ?; ', [tipo, id_emisor, id_publicacion]);
+
+    return resultado;
+}
+
+
+// Actualizar fecha de notificacion
+const actualizar_notificacion = async ({id_notificacion}) => {
+    const [resultado] = await conexion.execute('UPDATE notificacion SET fecha_creacion = CURRENT_TIMESTAMP WHERE id_notificacion = ?', [id_notificacion]);
+
+    return resultado;
+}
+
+
 // Obtener notificacion de un usuario por ID
 const listar_notificacion_id = async ({id_notificacion}) => {
     const [resultado] = await conexion.execute(`
@@ -70,6 +88,8 @@ const eliminar_todas_notificacion = async ({id_usuario}) => {
 // ================== Exportar funciones ==================
 module.exports = {
     crear_noticiacion,
+    buscar_notificacion,
+    actualizar_notificacion,
     listar_notificacion_id,
     listar_todas_notificaciones,
     eliminar_notificacion,

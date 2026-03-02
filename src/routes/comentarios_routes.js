@@ -19,9 +19,9 @@ router.get('/todos/:id_publicacion', obtener_todos_comentarios);
 // Obtener comentario por ID
 router.get('/uno/:id_comentario', obtener_comentario_id);
 // Editar comentario
-router.put('/editar/:id_comentario', editar_comentario);
+router.put('/editar/:id_comentario', auth, editar_comentario);
 // Eliminar comentario
-router.delete('/eliminar/:id_comentario', borrar_comentario);
+router.delete('/eliminar/:id_comentario', auth, borrar_comentario);
 
 
 // ================== Exportar funciones ==================

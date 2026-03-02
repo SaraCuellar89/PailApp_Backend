@@ -13,9 +13,9 @@ const {contestar_comentario,
 // Responder a un comentario
 router.post('/contestar/:id_comentario', auth, contestar_comentario);
 // Editar respuesta
-router.put('/editar/:id_respuesta', editar_respuesta);
+router.put('/editar/:id_respuesta', auth, editar_respuesta);
 // Eliminar respuesta
-router.delete('/eliminar/:id_respuesta', borrar_respuesta);
+router.delete('/eliminar/:id_respuesta', auth, borrar_respuesta);
 
 
 

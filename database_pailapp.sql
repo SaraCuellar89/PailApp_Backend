@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-02-2026 a las 03:30:54
+-- Tiempo de generación: 01-03-2026 a las 20:47:54
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `comentario` (
   `id_comentario` int(5) NOT NULL,
   `contenido` varchar(255) DEFAULT NULL,
-  `fecha_creacion` timestamp NULL DEFAULT current_timestamp(),
+  `fecha_creacion` datetime DEFAULT current_timestamp(),
   `id_usuario` int(5) NOT NULL,
   `id_publicacion` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -44,7 +44,7 @@ CREATE TABLE `comentario` (
 CREATE TABLE `notificacion` (
   `id_notificacion` int(5) NOT NULL,
   `tipo` enum('like','comentario','guardado') DEFAULT NULL,
-  `fecha_creacion` timestamp NULL DEFAULT current_timestamp(),
+  `fecha_creacion` datetime DEFAULT current_timestamp(),
   `id_usuario` int(5) NOT NULL,
   `id_emisor` int(5) NOT NULL,
   `id_publicacion` int(5) NOT NULL
@@ -66,7 +66,7 @@ CREATE TABLE `publicacion` (
   `public_id` varchar(250) DEFAULT NULL,
   `tiempo_preparacion` int(5) DEFAULT NULL,
   `dificultad` varchar(20) DEFAULT NULL,
-  `fecha_creacion` timestamp NULL DEFAULT current_timestamp(),
+  `fecha_creacion` datetime DEFAULT current_timestamp(),
   `id_usuario` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -101,7 +101,7 @@ CREATE TABLE `reaccion` (
 CREATE TABLE `respuesta_comentario` (
   `id_respuesta` int(5) NOT NULL,
   `contenido` varchar(255) DEFAULT NULL,
-  `fecha_creacion` timestamp NULL DEFAULT current_timestamp(),
+  `fecha_creacion` datetime DEFAULT current_timestamp(),
   `id_usuario` int(5) NOT NULL,
   `id_comentario` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

@@ -56,7 +56,7 @@ const subir_publicacion = async (req, res) => {
         
         await crear_publicacion({titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, dificultad, id_usuario});
 
-        const data = {titulo, descripcion, ingredientes, preparacion,  archivo, tiempo_preparacion, dificultad, id_usuario}
+        const data = {titulo, descripcion, ingredientes, preparacion,  archivo, public_id, tiempo_preparacion, dificultad, id_usuario}
 
         return respuesta_exito(res, 'Publicacion subida correctamente', 201, data);
     }
@@ -145,7 +145,7 @@ const editar_publicacion = async (req, res) => {
             }
         }
 
-        await actualizar_publicacion({titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, dificultad, id_usuario});
+        await actualizar_publicacion({titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, dificultad, id_publicacion});
 
         return respuesta_exito(res, 'Publicacion editada correctamente', 200);
     }
