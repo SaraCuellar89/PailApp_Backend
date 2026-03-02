@@ -43,6 +43,14 @@ const cambiar_tipo_cuenta = async (datos) => {
 }
 
 
+// Buscar usuario por CORREO
+const buscar_correo = async ({correo}) => {
+    const [resultado] = await conexion.execute('SELECT * FROM usuario WHERE correo = ?', [correo]);
+
+    return resultado;
+}
+
+
 // Obtener usuario por ID
 const obtener_usuario_id = async (id_usuario) => {
     const [resultado] = await conexion.execute('SELECT * FROM usuario WHERE id_usuario = ?', [id_usuario]);
@@ -51,12 +59,21 @@ const obtener_usuario_id = async (id_usuario) => {
 } 
 
 
+// Actualizar contraseña del usuario
+const actualizar_usuario_contrasena = async (datos) => {
+    const {id_usuario, contrasena} = datos;
+
+    await conexion.execute('UPDATE usuario SET contrasena = ? WHERE id_usuario = ?', [contrasena, id_usuario]);
+}
+
+
 // Editar usuario
 const actualizar_usuario = async (datos) => {
     const {id_usuario, nombre_usuario, correo, contrasena, avatar} = datos;
 
     await conexion.execute('UPDATE usuario SET nombre_usuario = ?, correo = ?, contrasena = ?, avatar = ? WHERE id_usuario = ?', [nombre_usuario, correo, contrasena, avatar, id_usuario]);
 }
+
 
 
 // Eliminar usuario
@@ -77,5 +94,7 @@ module.exports = {
     obtener_usuario_id,
     actualizar_usuario,
     eliminar_usuario,
-    cambiar_tipo_cuenta
+    cambiar_tipo_cuenta,
+    buscar_correo,
+    actualizar_usuario_contrasena
 }

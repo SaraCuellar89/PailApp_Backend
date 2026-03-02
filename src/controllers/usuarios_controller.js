@@ -4,7 +4,8 @@ const {encriptar_contrasena,
     generar_token,
     verificar_token,
     enviar_correo_registro,
-    enviar_correo_vinculacion} = require('../services/index')
+    enviar_correo_vinculacion,
+    enviar_correo_recuperacion} = require('../services/index')
 
 
 // ================== Importacion de Google ==================
@@ -19,7 +20,13 @@ const {
     respuesta_error_servidor} = require('../utils/responses')
 
 
-// ================== Importacion de modelos ==================
+// ================== Importacion de modelos de verificacion ==================
+const {crear_token, 
+    buscar_token, 
+    eliminar_token} = require('../models/verificacion_model');
+
+
+// ================== Importacion de modelos de usuario ==================
 const {buscar_usuario_correo, 
     crear_usuario,
     buscar_usuario_google,
@@ -27,7 +34,9 @@ const {buscar_usuario_correo,
     actualizar_usuario,
     obtener_usuario_id,
     eliminar_usuario,
-    cambiar_tipo_cuenta} = require('../models/usuarios_model');
+    cambiar_tipo_cuenta,
+    buscar_correo,
+    actualizar_usuario_contrasena} = require('../models/usuarios_model');
 
 
 // ================== Importacion de Helpers ==================
@@ -55,7 +64,7 @@ const registrar_usuarios = async (req, res) => {
 
         await crear_usuario({nombre_usuario, correo, contrasena:contrasena_encriptada, avatar});
 
-        enviar_correo_registro(correo, nombre_usuario).catch(console.error);
+        // enviar_correo_registro(correo, nombre_usuario).catch(console.error);
 
         return respuesta_exito(res, 'Usuario registrado correctamente', 201);
     }
@@ -238,6 +247,70 @@ const eliminar_cuenta = async(req, res) => {
 }
 
 
+// Solicitar recuperacion de contraseña
+const solicitar_recuperacion = async (req, res) => {
+    try {
+        const {correo} = req.body;
+
+        const busqueda = await buscar_correo({correo});
+
+        if(busqueda.length === 0){
+            return respuesta_error(res, "Ese correo no esta registrado", 404);
+        }
+
+        const usuario = busqueda[0];
+
+        if(usuario.contrasena == null){
+            return respuesta_error(res, "Esta cuenta usa google, no requiere contraseña", 400)
+        }
+
+        const token = Math.floor(10000 + Math.random() * 90000).toString(); // codigo de 5 numeros
+        const expira = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+
+        await crear_token({id_usuario: usuario.id_usuario, token, expira});
+
+        enviar_correo_recuperacion(correo, usuario.nombre_usuario, token).catch(console.error);
+
+        return respuesta_exito(res, "Correo de recuperacion enviado", 200);
+
+    } catch (error) {
+        return respuesta_error_servidor(res, error, "No se pudo enviar el correo de recuperacion");
+    }
+}
+
+
+// Restablecer contraseña
+const restablecer_contraseña = async (req, res) => {
+    try {
+        const {token} = req.params;
+        const {contrasena, confirmacion_contrasena} = req.body;   
+
+        if(contrasena !== confirmacion_contrasena){
+            return respuesta_error(res, 'Las contraseñas no coinciden', 400);
+        }
+
+        const resultado = await buscar_token({token});
+
+        if(resultado.length === 0){
+            return respuesta_error(res, 'Token inválido o expirado', 400);
+        }
+
+        const {id_usuario} = resultado[0];
+
+        const contrasena_encriptada = await encriptar_contrasena(contrasena);
+
+        await actualizar_usuario_contrasena({id_usuario, contrasena: contrasena_encriptada});
+
+        await eliminar_token({token});
+
+        return respuesta_exito(res, 'Contraseña restablecida correctamente', 200);
+
+    } catch (error) {
+        return respuesta_error_servidor(res, error, "No se pudo restablecer la contraseña");
+    }
+}
+
+
 
 // ================== Exportar funciones ==================
 module.exports = {
@@ -246,5 +319,7 @@ module.exports = {
     iniciar_sesion_google,
     informacion_usuario_token,
     editar_cuenta,
-    eliminar_cuenta
+    eliminar_cuenta,
+    solicitar_recuperacion,
+    restablecer_contraseña
 }

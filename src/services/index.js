@@ -96,6 +96,33 @@ const enviar_correo_vinculacion = async (destinatario, nombre) => {
 };
 
 
+// Funcion para enviar correo de recuperacion de contraseña
+const enviar_correo_recuperacion = async (destinatario, nombre, token) => {
+  const mailOptions = {
+    from: `"PailApp" <${process.env.EMAIL_USER}>`,
+    to: destinatario,
+    subject: "Recuperar contraseña",
+    html: `
+      <h2>¡Hola ${nombre}! :)</h2> 
+
+      <p>Tu token para restablecer la contraseña es (válido por 1 hora):</p>
+
+      <div style="text-align:center; background:#f4f4f4; padding:12px; font-size:18px; font-weight:bold; letter-spacing:2px;">
+        ${token}
+      </div>
+      
+      <br> 
+      
+      <p>Si no solicitaste esto, ignora este correo.</p>
+
+      <p style="font-size:12px; color:gray;"> Este es un mensaje automático, por favor no respondas a este correo. </p>
+    `
+  };
+
+  return await transporter.sendMail(mailOptions);
+};
+
+
 
 // ================== Exportar funciones ==================
 module.exports = {
@@ -104,5 +131,6 @@ module.exports = {
     generar_token,
     verificar_token,
     enviar_correo_registro,
-    enviar_correo_vinculacion
+    enviar_correo_vinculacion,
+    enviar_correo_recuperacion
 }

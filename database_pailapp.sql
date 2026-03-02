@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-03-2026 a las 03:50:21
+-- Tiempo de generación: 02-03-2026 a las 23:30:25
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -135,6 +135,20 @@ CREATE TABLE `usuario` (
   `google_id` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `verificacion`
+--
+
+CREATE TABLE `verificacion` (
+  `id_verificacion` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `expira` datetime NOT NULL,
+  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Índices para tablas volcadas
 --
@@ -200,6 +214,13 @@ ALTER TABLE `usuario`
   ADD UNIQUE KEY `correo` (`correo`);
 
 --
+-- Indices de la tabla `verificacion`
+--
+ALTER TABLE `verificacion`
+  ADD PRIMARY KEY (`id_verificacion`),
+  ADD KEY `id_usuario` (`id_usuario`);
+
+--
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
@@ -238,6 +259,12 @@ ALTER TABLE `respuesta_comentario`
 --
 ALTER TABLE `usuario`
   MODIFY `id_usuario` int(5) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `verificacion`
+--
+ALTER TABLE `verificacion`
+  MODIFY `id_verificacion` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restricciones para tablas volcadas
@@ -290,6 +317,12 @@ ALTER TABLE `reaccion`
 ALTER TABLE `respuesta_comentario`
   ADD CONSTRAINT `FKrespuesta_comentario` FOREIGN KEY (`id_comentario`) REFERENCES `comentario` (`id_comentario`) ON DELETE CASCADE,
   ADD CONSTRAINT `FKrespuesta_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `verificacion`
+--
+ALTER TABLE `verificacion`
+  ADD CONSTRAINT `verificacion_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
