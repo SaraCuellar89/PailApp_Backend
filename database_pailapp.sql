@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-03-2026 a las 20:47:54
+-- Tiempo de generación: 02-03-2026 a las 03:50:21
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -33,6 +33,19 @@ CREATE TABLE `comentario` (
   `fecha_creacion` datetime DEFAULT current_timestamp(),
   `id_usuario` int(5) NOT NULL,
   `id_publicacion` int(5) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `dispositivo`
+--
+
+CREATE TABLE `dispositivo` (
+  `id_dispositivo` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `fcm_token` varchar(255) NOT NULL,
+  `fecha_actualizacion` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -135,6 +148,13 @@ ALTER TABLE `comentario`
   ADD KEY `FKcomentario_publicacion` (`id_publicacion`);
 
 --
+-- Indices de la tabla `dispositivo`
+--
+ALTER TABLE `dispositivo`
+  ADD PRIMARY KEY (`id_dispositivo`),
+  ADD UNIQUE KEY `id_usuario` (`id_usuario`);
+
+--
 -- Indices de la tabla `notificacion`
 --
 ALTER TABLE `notificacion`
@@ -190,6 +210,12 @@ ALTER TABLE `comentario`
   MODIFY `id_comentario` int(5) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `dispositivo`
+--
+ALTER TABLE `dispositivo`
+  MODIFY `id_dispositivo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `notificacion`
 --
 ALTER TABLE `notificacion`
@@ -223,6 +249,12 @@ ALTER TABLE `usuario`
 ALTER TABLE `comentario`
   ADD CONSTRAINT `FKcomentario_publicacion` FOREIGN KEY (`id_publicacion`) REFERENCES `publicacion` (`id_publicacion`) ON DELETE CASCADE,
   ADD CONSTRAINT `FKcomentario_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `dispositivo`
+--
+ALTER TABLE `dispositivo`
+  ADD CONSTRAINT `dispositivo_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `notificacion`

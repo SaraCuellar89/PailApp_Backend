@@ -22,6 +22,7 @@ app.use(passport.initialize());
 
 // ================== Importacion de Rutas ==================
 const rutas_usuario = require("./src/routes/usuarios_routes");
+const rutas_token_fcm = require("./src/routes/token_fcm_routes");
 const rutas_publicaciones = require('./src/routes/publicacion_routes');
 const rutas_comentarios = require('./src/routes/comentarios_routes');
 const rutas_reacciones = require('./src/routes/reacciones_routes');
@@ -39,6 +40,8 @@ app.get('/', (req, res) => {
 
 // Usuarios
 app.use('/usuarios', rutas_usuario);
+// Token FCM
+app.use('/tokenFCM', rutas_token_fcm);
 // Publicaciones
 app.use('/publicaciones', rutas_publicaciones);
 // Comentarios
