@@ -64,7 +64,7 @@ const registrar_usuarios = async (req, res) => {
 
         await crear_usuario({nombre_usuario, correo, contrasena:contrasena_encriptada, avatar});
 
-        // enviar_correo_registro(correo, nombre_usuario).catch(console.error);
+        enviar_correo_registro(correo, nombre_usuario).catch(console.error);
 
         return respuesta_exito(res, 'Usuario registrado correctamente', 201);
     }
