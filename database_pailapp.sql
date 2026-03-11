@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-03-2026 a las 23:30:25
+-- Tiempo de generación: 11-03-2026 a las 02:38:50
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -78,6 +78,7 @@ CREATE TABLE `publicacion` (
   `archivo` varchar(255) DEFAULT NULL,
   `public_id` varchar(250) DEFAULT NULL,
   `tiempo_preparacion` int(5) DEFAULT NULL,
+  `tipo_tiempo` enum('min','h') DEFAULT NULL,
   `dificultad` varchar(20) DEFAULT NULL,
   `fecha_creacion` datetime DEFAULT current_timestamp(),
   `id_usuario` int(5) NOT NULL

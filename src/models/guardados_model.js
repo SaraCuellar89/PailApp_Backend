@@ -67,6 +67,7 @@ const listar_platos_guardados = async (id_usuario) => {
         INNER JOIN usuario u_post
         ON p.id_usuario = u_post.id_usuario
         WHERE g.id_usuario = ?    
+        GROUP BY p.fecha_creacion DESC
     `, [id_usuario]);
 
     const datos = {

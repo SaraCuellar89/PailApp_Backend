@@ -20,7 +20,7 @@ const {crear_publicacion,
 // Subir una publicacion
 const subir_publicacion = async (req, res) => {
     try{
-        const {titulo, descripcion, ingredientes, preparacion, tiempo_preparacion, dificultad} = req.body;
+        const {titulo, descripcion, ingredientes, preparacion, tiempo_preparacion, tipo_tiempo, dificultad} = req.body;
         const id_usuario = req.usuario.id_usuario;
 
         // Por si el usuario no sube ningun archivo, estos campos se guardan como nulos en la bbdd
@@ -54,9 +54,9 @@ const subir_publicacion = async (req, res) => {
         }
 
         
-        await crear_publicacion({titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, dificultad, id_usuario});
+        await crear_publicacion({titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, tipo_tiempo, dificultad, id_usuario});
 
-        const data = {titulo, descripcion, ingredientes, preparacion,  archivo, public_id, tiempo_preparacion, dificultad, id_usuario}
+        const data = {titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, tipo_tiempo, dificultad, id_usuario}
 
         return respuesta_exito(res, 'Publicacion subida correctamente', 201, data);
     }
@@ -104,7 +104,7 @@ const obtener_publicacion_id = async (req, res) => {
 // Editar una publicacion
 const editar_publicacion = async (req, res) => {
     try{
-        const {titulo, descripcion, ingredientes, preparacion, tiempo_preparacion, dificultad} = req.body;
+        const {titulo, descripcion, ingredientes, preparacion, tiempo_preparacion, tipo_tiempo, dificultad} = req.body;
         const {id_publicacion} = req.params;
 
         const publicacion_actual = await listar_publicacion_id(id_publicacion);
@@ -145,7 +145,7 @@ const editar_publicacion = async (req, res) => {
             }
         }
 
-        await actualizar_publicacion({titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, dificultad, id_publicacion});
+        await actualizar_publicacion({titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, tipo_tiempo, dificultad, id_publicacion});
 
         return respuesta_exito(res, 'Publicacion editada correctamente', 200);
     }
