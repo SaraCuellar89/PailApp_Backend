@@ -1,0 +1,63 @@
+const conexion = require('../config/databse');
+
+
+// Registrar ingredientes
+const insertar_ingredientes = async ({id_usuario, id_publicacion, ingredientes}) => {
+
+    for (const nombre of ingredientes)  {
+        await conexion.execute(
+            `INSERT INTO ingrediente_guardado (id_usuario, id_publicacion, nombre) VALUES (?, ?, ?)`, [id_usuario, id_publicacion, nombre]
+        );
+    }
+}
+
+
+// Listar todos los ingredientes
+const listar_todos_ingredientes = async ({id_usuario, id_publicacion}) => {
+    const [resultado] = await conexion.execute('SELECT * FROM ingrediente_guardado WHERE id_usuario = ? AND id_publicacion = ?', [id_usuario, id_publicacion]);
+
+    return resultado;
+}
+
+// Listar ingrediente por su id
+const lista_ingrediente_id = async ({id_ingrediente}) => {
+    const [resultado] = await conexion.execute('SELECT * FROM ingrediente_guardado WHERE id_ingrediente = ?', [id_ingrediente]);
+
+    return resultado;
+}
+
+
+// Editar el estado del ingrediente (obtenido)
+const editar_estado_ingrediente = async ({id_ingrediente, obtenido}) => {
+    const [resultado] = await conexion.execute('UPDATE ingrediente_guardado SET obtenido = ? WHERE id_ingrediente = ?', [obtenido, id_ingrediente]);
+
+    return resultado;
+}
+
+
+// Editar ingrediente
+const editar_ingrediente = async ({id_ingrediente, nombre}) => {
+    const [resultado] = conexion.execute('UPDATE ingrediente_guardado SET nombre = ? WHERE id_ingrediente = ?', [nombre, id_ingrediente]);
+
+    return resultado;
+}
+
+
+// Eliminar ingrediente
+const eliminar_ingrediente = async ({id_ingrediente}) => {
+    const [resultado] = conexion.execute('DELETE FROM ingrediente_guardado WHERE id_ingrediente = ?', [id_ingrediente]);
+
+    return resultado;
+}
+
+
+
+// ================== Exportar funciones ==================
+module.exports = {
+    insertar_ingredientes, 
+    listar_todos_ingredientes,
+    lista_ingrediente_id,
+    editar_estado_ingrediente,
+    editar_ingrediente,
+    eliminar_ingrediente
+}

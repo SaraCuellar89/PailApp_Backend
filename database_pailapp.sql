@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-03-2026 a las 13:22:23
+-- Tiempo de generación: 13-03-2026 a las 15:32:17
 -- Versión del servidor: 10.1.32-MariaDB
 -- Versión de PHP: 7.2.5
 
@@ -52,6 +52,32 @@ CREATE TABLE `dispositivo` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `ingrediente_guardado`
+--
+
+CREATE TABLE `ingrediente_guardado` (
+  `id_ingrediente` int(11) NOT NULL,
+  `id_usuario` int(5) NOT NULL,
+  `id_publicacion` int(5) NOT NULL,
+  `nombre` varchar(150) NOT NULL,
+  `obtenido` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `ingrediente_guardado`
+--
+
+INSERT INTO `ingrediente_guardado` (`id_ingrediente`, `id_usuario`, `id_publicacion`, `nombre`, `obtenido`) VALUES
+(1, 3, 1, '1 pechuga de pollo', 0),
+(2, 3, 1, '1 zanahoria', 0),
+(3, 3, 1, '1/2 cebolla', 0),
+(4, 3, 1, '1 diente de ajo', 0),
+(5, 3, 1, '2 tazas de caldo de pollo', 0),
+(6, 3, 1, 'Sal al gusto', 0);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `notificacion`
 --
 
@@ -63,6 +89,13 @@ CREATE TABLE `notificacion` (
   `id_emisor` int(5) NOT NULL,
   `id_publicacion` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `notificacion`
+--
+
+INSERT INTO `notificacion` (`id_notificacion`, `tipo`, `fecha_creacion`, `id_usuario`, `id_emisor`, `id_publicacion`) VALUES
+(1, 'guardado', '2026-03-13 09:02:48', 1, 3, 1);
 
 -- --------------------------------------------------------
 
@@ -85,6 +118,13 @@ CREATE TABLE `publicacion` (
   `id_usuario` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Volcado de datos para la tabla `publicacion`
+--
+
+INSERT INTO `publicacion` (`id_publicacion`, `titulo`, `descripcion`, `ingredientes`, `preparacion`, `archivo`, `public_id`, `tiempo_preparacion`, `tipo_tiempo`, `dificultad`, `fecha_creacion`, `id_usuario`) VALUES
+(1, 'Arroz con pollo', 'Un plato tradicional con arroz, pollo y verduras.', '[\"1 pechuga de pollo\",\"1 zanahoria\",\"1/2 cebolla\",\"1 diente de ajo\",\"2 tazas de caldo de pollo\",\"Sal al gusto\"]', 'Cocinar el pollo, sofreír las verduras, agregar el arroz y el caldo, y cocinar hasta que el arroz esté listo.', NULL, NULL, 45, '', 'media', '2026-03-13 07:16:26', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -95,6 +135,13 @@ CREATE TABLE `publicacion_guardada` (
   `id_usuario` int(5) NOT NULL,
   `id_publicacion` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `publicacion_guardada`
+--
+
+INSERT INTO `publicacion_guardada` (`id_usuario`, `id_publicacion`) VALUES
+(3, 1);
 
 -- --------------------------------------------------------
 
@@ -140,6 +187,14 @@ CREATE TABLE `usuario` (
   `edad` int(2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Volcado de datos para la tabla `usuario`
+--
+
+INSERT INTO `usuario` (`id_usuario`, `nombre_usuario`, `correo`, `contrasena`, `avatar`, `proveedor`, `google_id`, `altura`, `peso`, `edad`) VALUES
+(1, 'Juan Perez', 'juan.perez@email.com', '$2b$10$3j8d3gJtYza9/ihiyWgLKuQUiReToSbwFLvIktthyFYVol8bziuXK', 'img', 'local', NULL, '1.80', '68.00', 22),
+(3, 'Marta Lopez', 'marta@email.com', '$2b$10$nUY43xLGtq31JVTvYmFMJ.H7ndzgThW8o1evx1FgaGy4CVpXt35tG', 'img', 'local', NULL, NULL, NULL, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -172,6 +227,13 @@ ALTER TABLE `comentario`
 ALTER TABLE `dispositivo`
   ADD PRIMARY KEY (`id_dispositivo`),
   ADD UNIQUE KEY `id_usuario` (`id_usuario`);
+
+--
+-- Indices de la tabla `ingrediente_guardado`
+--
+ALTER TABLE `ingrediente_guardado`
+  ADD PRIMARY KEY (`id_ingrediente`),
+  ADD KEY `FK_ing_guardado` (`id_usuario`,`id_publicacion`);
 
 --
 -- Indices de la tabla `notificacion`
@@ -242,16 +304,22 @@ ALTER TABLE `dispositivo`
   MODIFY `id_dispositivo` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `ingrediente_guardado`
+--
+ALTER TABLE `ingrediente_guardado`
+  MODIFY `id_ingrediente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT de la tabla `notificacion`
 --
 ALTER TABLE `notificacion`
-  MODIFY `id_notificacion` int(5) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_notificacion` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `id_publicacion` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_publicacion` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `respuesta_comentario`
@@ -263,7 +331,7 @@ ALTER TABLE `respuesta_comentario`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_usuario` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `verificacion`
@@ -287,6 +355,12 @@ ALTER TABLE `comentario`
 --
 ALTER TABLE `dispositivo`
   ADD CONSTRAINT `dispositivo_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `ingrediente_guardado`
+--
+ALTER TABLE `ingrediente_guardado`
+  ADD CONSTRAINT `FK_ing_guardado` FOREIGN KEY (`id_usuario`,`id_publicacion`) REFERENCES `publicacion_guardada` (`id_usuario`, `id_publicacion`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `notificacion`
