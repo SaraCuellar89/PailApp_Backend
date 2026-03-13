@@ -109,9 +109,9 @@ const listar_publicacion_id = async (id_publicacion) => {
 
 // Actualizar publicacion
 const actualizar_publicacion = async (datos) => {
-    const {titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, tipo_tiempo, dificultad, id_usuario} = datos;
+    const {titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, tipo_tiempo, dificultad, id_publicacion} = datos;
 
-    await conexion.execute('UPDATE publicacion SET titulo = ?, descripcion = ?, ingredientes = ?, preparacion = ?, archivo = ?, public_id = ?, tiempo_preparacion = ?, tipo_tiempo = ?, dificultad = ? WHERE id_publicacion = ?', [titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, tipo_tiempo, dificultad, id_usuario]); 
+    await conexion.execute('UPDATE publicacion SET titulo = ?, descripcion = ?, ingredientes = ?, preparacion = ?, archivo = ?, public_id = ?, tiempo_preparacion = ?, tipo_tiempo = ?, dificultad = ? WHERE id_publicacion = ?', [titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, tipo_tiempo, dificultad, id_publicacion]); 
 }
 
 

@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 4.8.0.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-03-2026 a las 02:38:50
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Tiempo de generación: 13-03-2026 a las 13:22:23
+-- Versión del servidor: 10.1.32-MariaDB
+-- Versión de PHP: 7.2.5
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -30,10 +31,10 @@ SET time_zone = "+00:00";
 CREATE TABLE `comentario` (
   `id_comentario` int(5) NOT NULL,
   `contenido` varchar(255) DEFAULT NULL,
-  `fecha_creacion` datetime DEFAULT current_timestamp(),
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
   `id_usuario` int(5) NOT NULL,
   `id_publicacion` int(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -45,8 +46,8 @@ CREATE TABLE `dispositivo` (
   `id_dispositivo` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
   `fcm_token` varchar(255) NOT NULL,
-  `fecha_actualizacion` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `fecha_actualizacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -57,11 +58,11 @@ CREATE TABLE `dispositivo` (
 CREATE TABLE `notificacion` (
   `id_notificacion` int(5) NOT NULL,
   `tipo` enum('like','comentario','guardado') DEFAULT NULL,
-  `fecha_creacion` datetime DEFAULT current_timestamp(),
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
   `id_usuario` int(5) NOT NULL,
   `id_emisor` int(5) NOT NULL,
   `id_publicacion` int(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -72,17 +73,17 @@ CREATE TABLE `notificacion` (
 CREATE TABLE `publicacion` (
   `id_publicacion` int(5) NOT NULL,
   `titulo` varchar(100) DEFAULT NULL,
-  `descripcion` text DEFAULT NULL,
-  `ingredientes` text DEFAULT NULL,
-  `preparacion` text DEFAULT NULL,
+  `descripcion` text,
+  `ingredientes` longtext,
+  `preparacion` text,
   `archivo` varchar(255) DEFAULT NULL,
   `public_id` varchar(250) DEFAULT NULL,
   `tiempo_preparacion` int(5) DEFAULT NULL,
   `tipo_tiempo` enum('min','h') DEFAULT NULL,
   `dificultad` varchar(20) DEFAULT NULL,
-  `fecha_creacion` datetime DEFAULT current_timestamp(),
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
   `id_usuario` int(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -93,7 +94,7 @@ CREATE TABLE `publicacion` (
 CREATE TABLE `publicacion_guardada` (
   `id_usuario` int(5) NOT NULL,
   `id_publicacion` int(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -104,7 +105,7 @@ CREATE TABLE `publicacion_guardada` (
 CREATE TABLE `reaccion` (
   `id_usuario` int(5) NOT NULL,
   `id_publicacion` int(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -115,10 +116,10 @@ CREATE TABLE `reaccion` (
 CREATE TABLE `respuesta_comentario` (
   `id_respuesta` int(5) NOT NULL,
   `contenido` varchar(255) DEFAULT NULL,
-  `fecha_creacion` datetime DEFAULT current_timestamp(),
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
   `id_usuario` int(5) NOT NULL,
   `id_comentario` int(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -133,8 +134,11 @@ CREATE TABLE `usuario` (
   `contrasena` varchar(255) DEFAULT NULL,
   `avatar` varchar(255) DEFAULT NULL,
   `proveedor` enum('local','google') DEFAULT 'local',
-  `google_id` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `google_id` varchar(100) DEFAULT NULL,
+  `altura` decimal(3,2) DEFAULT NULL,
+  `peso` decimal(5,2) DEFAULT NULL,
+  `edad` int(2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -147,8 +151,8 @@ CREATE TABLE `verificacion` (
   `id_usuario` int(11) NOT NULL,
   `token` varchar(255) NOT NULL,
   `expira` datetime NOT NULL,
-  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `fecha_creacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Índices para tablas volcadas
@@ -247,7 +251,7 @@ ALTER TABLE `notificacion`
 -- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `id_publicacion` int(5) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_publicacion` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `respuesta_comentario`
@@ -259,7 +263,7 @@ ALTER TABLE `respuesta_comentario`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(5) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_usuario` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `verificacion`

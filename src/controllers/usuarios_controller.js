@@ -36,7 +36,8 @@ const {buscar_usuario_correo,
     eliminar_usuario,
     cambiar_tipo_cuenta,
     buscar_correo,
-    actualizar_usuario_contrasena} = require('../models/usuarios_model');
+    actualizar_usuario_contrasena,
+    insertar_datos_adicionales} = require('../models/usuarios_model');
 
 
 // ================== Importacion de Helpers ==================
@@ -189,6 +190,33 @@ const iniciar_sesion_google = async (req, res) => {
 };
 
 
+// Registrar y/o actualizar datos adicionales del usuario
+const registrar_datos_adicionales = async(req, res) => {
+    try {
+        const {edad, peso, altura} = req.body;
+        const id_usuario = req.usuario.id_usuario;
+
+        // Validaciones
+        if(peso < 20 || peso > 300) {
+            return respuesta_error(res, 'Peso fuera de rango válido (20-300 kg)', 400);
+        }
+        if (altura < 0.5 || altura > 2.5) {
+            return respuesta_error(res, 'Altura fuera de rango válida (0.50 - 2.50 m)', 400);
+        }
+        if(edad < 10 || edad > 120) {
+            return respuesta_error(res, 'Edad fuera de rango válida (10-100)', 400);
+        }
+
+        await insertar_datos_adicionales({edad, peso, altura, id_usuario});
+
+        return respuesta_exito(res, 'Registro de datos adicionales exitoso', 200)
+
+    } catch (error) {
+        return respuesta_error_servidor(res, error, 'Error al registrar datos adicionales');
+    }
+}
+
+
 // Obtener informacion de usuario en sesion
 const informacion_usuario_token = async(req, res) => {
     return res.json({
@@ -321,5 +349,6 @@ module.exports = {
     editar_cuenta,
     eliminar_cuenta,
     solicitar_recuperacion,
-    restablecer_contraseña
+    restablecer_contraseña,
+    registrar_datos_adicionales
 }

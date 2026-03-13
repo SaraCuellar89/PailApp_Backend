@@ -12,7 +12,8 @@ const {registrar_usuarios,
     editar_cuenta,
     eliminar_cuenta,
     solicitar_recuperacion,
-    restablecer_contraseña} = require("../controllers/usuarios_controller")
+    restablecer_contraseña,
+    registrar_datos_adicionales} = require("../controllers/usuarios_controller")
 
 
 // ================== Rutas ==================
@@ -24,7 +25,9 @@ router.post('/iniciar_sesion', limite_inicio_sesion, iniciar_sesion);
 // Iniciar sesion Google
 router.post('/iniciar_sesion_google', iniciar_sesion_google);
 // Buscar informacion de un usuario en sesion por medio del token
-router.get('/usuario_logueado', auth, informacion_usuario_token)
+router.get('/usuario_logueado', auth, informacion_usuario_token);
+// Registrar datos adicionales del usuario (edad, peso, altura)
+router.put('/registrar_datos_adicionales', auth, registrar_datos_adicionales);
 // Editar la informacion de la cuenta
 router.put('/editar_cuenta', auth, editar_cuenta);
 // Eliminar la cuenta

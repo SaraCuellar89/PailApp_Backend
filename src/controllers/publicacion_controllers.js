@@ -23,6 +23,9 @@ const subir_publicacion = async (req, res) => {
         const {titulo, descripcion, ingredientes, preparacion, tiempo_preparacion, tipo_tiempo, dificultad} = req.body;
         const id_usuario = req.usuario.id_usuario;
 
+        // Convertir el array de ingredientes en JSON
+        const ingredientes_string = JSON.stringify(ingredientes);
+
         // Por si el usuario no sube ningun archivo, estos campos se guardan como nulos en la bbdd
         let archivo = null;
         let public_id = null;
@@ -54,7 +57,7 @@ const subir_publicacion = async (req, res) => {
         }
 
         
-        await crear_publicacion({titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, tipo_tiempo, dificultad, id_usuario});
+        await crear_publicacion({titulo, descripcion, ingredientes: ingredientes_string, preparacion, archivo, public_id, tiempo_preparacion, tipo_tiempo, dificultad, id_usuario});
 
         const data = {titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, tipo_tiempo, dificultad, id_usuario}
 
@@ -107,6 +110,9 @@ const editar_publicacion = async (req, res) => {
         const {titulo, descripcion, ingredientes, preparacion, tiempo_preparacion, tipo_tiempo, dificultad} = req.body;
         const {id_publicacion} = req.params;
 
+        // Convertir el array de ingredientes en JSON
+        const ingredientes_string = JSON.stringify(ingredientes);
+
         const publicacion_actual = await listar_publicacion_id(id_publicacion);
 
         let archivo = publicacion_actual.publicacion?.publicacion_archivo ?? null;
@@ -145,9 +151,11 @@ const editar_publicacion = async (req, res) => {
             }
         }
 
-        await actualizar_publicacion({titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, tipo_tiempo, dificultad, id_publicacion});
+        await actualizar_publicacion({titulo, descripcion, ingredientes: ingredientes_string, preparacion, archivo, public_id, tiempo_preparacion, tipo_tiempo, dificultad, id_publicacion});
 
-        return respuesta_exito(res, 'Publicacion editada correctamente', 200);
+        const data = {titulo, descripcion, ingredientes, preparacion, archivo, public_id, tiempo_preparacion, tipo_tiempo, dificultad, id_publicacion};
+
+        return respuesta_exito(res, 'Publicacion editada correctamente', 200, data);
     }
     catch(error){
         return respuesta_error_servidor(res, error, 'No se pudo editar la publicacion');
