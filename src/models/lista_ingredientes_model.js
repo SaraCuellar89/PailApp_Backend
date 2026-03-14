@@ -12,12 +12,21 @@ const insertar_ingredientes = async ({id_usuario, id_publicacion, ingredientes})
 }
 
 
+// Registrar un solo ingrediente
+const insertar_un_ingrediente = async ({id_usuario, id_publicacion, nombre}) => {
+    const [resultado] = await conexion.execute('INSERT INTO ingrediente_guardado (id_usuario, id_publicacion, nombre) VALUES (?, ?, ?)', [id_usuario, id_publicacion, nombre]);
+
+    return resultado;
+}
+
+
 // Listar todos los ingredientes
 const listar_todos_ingredientes = async ({id_usuario, id_publicacion}) => {
     const [resultado] = await conexion.execute('SELECT * FROM ingrediente_guardado WHERE id_usuario = ? AND id_publicacion = ?', [id_usuario, id_publicacion]);
 
     return resultado;
 }
+
 
 // Listar ingrediente por su id
 const lista_ingrediente_id = async ({id_ingrediente}) => {
@@ -36,8 +45,8 @@ const editar_estado_ingrediente = async ({id_ingrediente, obtenido}) => {
 
 
 // Editar ingrediente
-const editar_ingrediente = async ({id_ingrediente, nombre}) => {
-    const [resultado] = conexion.execute('UPDATE ingrediente_guardado SET nombre = ? WHERE id_ingrediente = ?', [nombre, id_ingrediente]);
+const actualizar_ingrediente = async ({id_ingrediente, nombre}) => {
+    const [resultado] = await conexion.execute('UPDATE ingrediente_guardado SET nombre = ? WHERE id_ingrediente = ?', [nombre, id_ingrediente]);
 
     return resultado;
 }
@@ -45,7 +54,7 @@ const editar_ingrediente = async ({id_ingrediente, nombre}) => {
 
 // Eliminar ingrediente
 const eliminar_ingrediente = async ({id_ingrediente}) => {
-    const [resultado] = conexion.execute('DELETE FROM ingrediente_guardado WHERE id_ingrediente = ?', [id_ingrediente]);
+    const [resultado] = await conexion.execute('DELETE FROM ingrediente_guardado WHERE id_ingrediente = ?', [id_ingrediente]);
 
     return resultado;
 }
@@ -55,9 +64,10 @@ const eliminar_ingrediente = async ({id_ingrediente}) => {
 // ================== Exportar funciones ==================
 module.exports = {
     insertar_ingredientes, 
+    insertar_un_ingrediente,
     listar_todos_ingredientes,
     lista_ingrediente_id,
     editar_estado_ingrediente,
-    editar_ingrediente,
+    actualizar_ingrediente,
     eliminar_ingrediente
 }
