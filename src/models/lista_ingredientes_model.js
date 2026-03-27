@@ -59,6 +59,13 @@ const eliminar_ingrediente = async ({id_ingrediente}) => {
     return resultado;
 }
 
+// Eliminar todos los ingredientes que tienen relacion con una publicacion
+const eliminar_todos_ingredientes = async ({id_publicacion, id_usuario}) => {
+    const [resultado] = await conexion.execute('DELETE FROM ingrediente_guardado WHERE id_publicacion = ? and id_usuario = ?', [id_publicacion, id_usuario]);
+
+    return resultado;
+}
+
 
 
 // ================== Exportar funciones ==================
@@ -69,5 +76,6 @@ module.exports = {
     lista_ingrediente_id,
     editar_estado_ingrediente,
     actualizar_ingrediente,
-    eliminar_ingrediente
+    eliminar_ingrediente,
+    eliminar_todos_ingredientes
 }

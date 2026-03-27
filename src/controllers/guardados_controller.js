@@ -14,7 +14,8 @@ const {crear_plato_guardado,
     eliminar_plato_guardado,
     listar_platos_guardados} = require('../models/guardados_model');
 
-const {insertar_ingredientes} = require('../models/lista_ingredientes_model');
+const {insertar_ingredientes,
+    eliminar_todos_ingredientes} = require('../models/lista_ingredientes_model');
 
 
 // ================== Funciones del controlador ==================
@@ -29,6 +30,9 @@ const guardar_plato = async (req, res) => {
 
         if(buscar.existe.length > 0){
             await eliminar_plato_guardado({id_usuario, id_publicacion});
+
+            // Eliminar lista de ingredientes
+            await eliminar_todos_ingredientes({id_publicacion, id_usuario});
             
             return respuesta_exito(res, "Plato Guardado eliminado correctamente", 200);
         }
