@@ -1,5 +1,6 @@
-const cloudinary = require('../config/config_cloudinary');
-const streamifier = require('streamifier');
+const { PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { v4: uuidv4 } = require('uuid');
+const r2 = require('../config/config_cloudflare');
 
 // ================== Importacion de funciones de error o exito ================== 
 const {respuesta_exito,
@@ -32,28 +33,20 @@ const subir_publicacion = async (req, res) => {
 
         if (req.file) {
 
-            // Funcion para cargar una el arhivo a cloudinary, transformarlo si es necesario y generar la url y el public id 
-            const resultado = await new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    {
-                        folder: 'archivos',
-                        resource_type: 'auto',
-                        transformation: [
-                            { width: 1080, crop: "limit" },
-                            { quality: "auto" }
-                        ]
-                    },
-                    (error, result) => {
-                        if (error) reject(error);
-                        else resolve(result);
-                    }
-                );
+            // --- subir imagenes a cloudflare ---
 
-                streamifier.createReadStream(req.file.buffer).pipe(stream);
-            });
+            // Generar un nombre unico para el archivo
+            const key = `archivos/${uuidv4()}-${req.file.originalname}`;
+            
+            await r2.send(new PutObjectCommand({
+                Bucket: process.env.R2_BUCKET_NAME,
+                Key: key,
+                Body: req.file.buffer,
+                ContentType: req.file.mimetype,
+            }));
 
-            archivo = resultado.secure_url;
-            public_id = resultado.public_id;
+            archivo = `${process.env.R2_PUBLIC_URL}/${key}`;
+            public_id = key;
         }
 
         
@@ -120,34 +113,24 @@ const editar_publicacion = async (req, res) => {
 
         if (req.file) {
 
-            const resultado = await new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    {
-                        folder: 'archivos',
-                        resource_type: 'auto',
-                        transformation: [
-                            { width: 1080, crop: "limit" },
-                            { quality: "auto" }
-                        ]
-                    },
-                    (error, result) => {
-                        if (error) reject(error);
-                        else resolve(result);
-                    }
-                );
+            const key = `archivos/${uuidv4()}-${req.file.originalname}`;
 
-                streamifier.createReadStream(req.file.buffer).pipe(stream);
-            });
+            await r2.send(new PutObjectCommand({
+                Bucket: process.env.R2_BUCKET_NAME,
+                Key: key,
+                Body: req.file.buffer,
+                ContentType: req.file.mimetype,
+            }));
 
-            archivo = resultado.secure_url;
-            public_id = resultado.public_id;
+            archivo = `${process.env.R2_PUBLIC_URL}/${key}`;
+            public_id = key;
 
             // borrar imagen anterior
             if (publicacion_actual.publicacion.publicacion_public_id) {
-                await cloudinary.uploader.destroy(
-                    publicacion_actual.publicacion.publicacion_public_id,
-                    { resource_type: "image" }
-                );
+                await r2.send(new DeleteObjectCommand({
+                    Bucket: process.env.R2_BUCKET_NAME,
+                    Key: publicacion_actual.publicacion.publicacion_public_id,
+                }));
             }
         }
 
@@ -170,11 +153,12 @@ const borrar_publicacion = async (req, res) => {
 
         const resultado = await listar_publicacion_id(id_publicacion);
 
-        // borrar imagen de cloudinary
-        if(resultado.publicacion.publicacion_public_id){
-            const resultadoCloudinary = await cloudinary.uploader.destroy(resultado.publicacion.publicacion_public_id, {
-                resource_type: "image"
-            });
+        // borrar imagen de r2
+        if (resultado.publicacion.publicacion_public_id) {  
+            await r2.send(new DeleteObjectCommand({
+                Bucket: process.env.R2_BUCKET_NAME,
+                Key: resultado.publicacion.publicacion_public_id, 
+            }));
         }
 
         await eliminar_publicacion(id_publicacion);
