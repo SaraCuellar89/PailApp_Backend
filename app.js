@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 dotenv.config();
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "*",
     credentials: true
 }));
 
@@ -62,7 +62,7 @@ app.use('/filtros', rutas_filtros);
 
 
 // ================== Escucha del puerto (numero de puerto en .evn) ================== 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
