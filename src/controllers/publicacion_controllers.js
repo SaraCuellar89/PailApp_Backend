@@ -25,7 +25,9 @@ const subir_publicacion = async (req, res) => {
         const id_usuario = req.usuario.id_usuario;
 
         // Convertir el array de ingredientes en JSON
-        const ingredientes_string = JSON.stringify(ingredientes);
+        const ingredientes_string = typeof ingredientes === 'string' 
+            ? ingredientes 
+            : JSON.stringify(ingredientes);
 
         // Por si el usuario no sube ningun archivo, estos campos se guardan como nulos en la bbdd
         let archivo = null;
