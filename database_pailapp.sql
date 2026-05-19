@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 07-04-2026 a las 23:00:12
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Host: mysql-base1cine.alwaysdata.net
+-- Generation Time: May 19, 2026 at 02:16 AM
+-- Server version: 10.11.15-MariaDB
+-- PHP Version: 8.4.19
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `database_pailapp`
+-- Database: `base1cine_pailapp`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `comentario`
+-- Table structure for table `comentario`
 --
 
 CREATE TABLE `comentario` (
@@ -38,7 +38,22 @@ CREATE TABLE `comentario` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `dispositivo`
+-- Table structure for table `conversacion`
+--
+
+CREATE TABLE `conversacion` (
+  `id_conversacion` int(11) NOT NULL,
+  `id_usuario` int(5) NOT NULL,
+  `titulo` varchar(100) DEFAULT NULL,
+  `estado` enum('activa','archivada') DEFAULT 'activa',
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dispositivo`
 --
 
 CREATE TABLE `dispositivo` (
@@ -51,7 +66,7 @@ CREATE TABLE `dispositivo` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `ingrediente_guardado`
+-- Table structure for table `ingrediente_guardado`
 --
 
 CREATE TABLE `ingrediente_guardado` (
@@ -65,7 +80,7 @@ CREATE TABLE `ingrediente_guardado` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `notificacion`
+-- Table structure for table `notificacion`
 --
 
 CREATE TABLE `notificacion` (
@@ -80,7 +95,7 @@ CREATE TABLE `notificacion` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `publicacion`
+-- Table structure for table `publicacion`
 --
 
 CREATE TABLE `publicacion` (
@@ -101,7 +116,7 @@ CREATE TABLE `publicacion` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `publicacion_guardada`
+-- Table structure for table `publicacion_guardada`
 --
 
 CREATE TABLE `publicacion_guardada` (
@@ -112,7 +127,7 @@ CREATE TABLE `publicacion_guardada` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `reaccion`
+-- Table structure for table `reaccion`
 --
 
 CREATE TABLE `reaccion` (
@@ -123,7 +138,7 @@ CREATE TABLE `reaccion` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `respuesta_comentario`
+-- Table structure for table `respuesta_comentario`
 --
 
 CREATE TABLE `respuesta_comentario` (
@@ -137,7 +152,7 @@ CREATE TABLE `respuesta_comentario` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `usuario`
+-- Table structure for table `usuario`
 --
 
 CREATE TABLE `usuario` (
@@ -157,7 +172,7 @@ CREATE TABLE `usuario` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `verificacion`
+-- Table structure for table `verificacion`
 --
 
 CREATE TABLE `verificacion` (
@@ -169,11 +184,11 @@ CREATE TABLE `verificacion` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Índices para tablas volcadas
+-- Indexes for dumped tables
 --
 
 --
--- Indices de la tabla `comentario`
+-- Indexes for table `comentario`
 --
 ALTER TABLE `comentario`
   ADD PRIMARY KEY (`id_comentario`),
@@ -181,21 +196,28 @@ ALTER TABLE `comentario`
   ADD KEY `FKcomentario_publicacion` (`id_publicacion`);
 
 --
--- Indices de la tabla `dispositivo`
+-- Indexes for table `conversacion`
+--
+ALTER TABLE `conversacion`
+  ADD PRIMARY KEY (`id_conversacion`),
+  ADD KEY `idx_conversacion_usuario` (`id_usuario`);
+
+--
+-- Indexes for table `dispositivo`
 --
 ALTER TABLE `dispositivo`
   ADD PRIMARY KEY (`id_dispositivo`),
   ADD UNIQUE KEY `id_usuario` (`id_usuario`);
 
 --
--- Indices de la tabla `ingrediente_guardado`
+-- Indexes for table `ingrediente_guardado`
 --
 ALTER TABLE `ingrediente_guardado`
   ADD PRIMARY KEY (`id_ingrediente`),
   ADD KEY `FK_ing_guardado` (`id_usuario`,`id_publicacion`);
 
 --
--- Indices de la tabla `notificacion`
+-- Indexes for table `notificacion`
 --
 ALTER TABLE `notificacion`
   ADD PRIMARY KEY (`id_notificacion`),
@@ -204,28 +226,28 @@ ALTER TABLE `notificacion`
   ADD KEY `FKnotif_publicacion` (`id_publicacion`);
 
 --
--- Indices de la tabla `publicacion`
+-- Indexes for table `publicacion`
 --
 ALTER TABLE `publicacion`
   ADD PRIMARY KEY (`id_publicacion`),
   ADD KEY `FKpublicacion_usuario` (`id_usuario`);
 
 --
--- Indices de la tabla `publicacion_guardada`
+-- Indexes for table `publicacion_guardada`
 --
 ALTER TABLE `publicacion_guardada`
   ADD PRIMARY KEY (`id_usuario`,`id_publicacion`),
   ADD KEY `FKguardado_publicacion` (`id_publicacion`);
 
 --
--- Indices de la tabla `reaccion`
+-- Indexes for table `reaccion`
 --
 ALTER TABLE `reaccion`
   ADD PRIMARY KEY (`id_usuario`,`id_publicacion`),
   ADD KEY `FKreaccion_publicacion` (`id_publicacion`);
 
 --
--- Indices de la tabla `respuesta_comentario`
+-- Indexes for table `respuesta_comentario`
 --
 ALTER TABLE `respuesta_comentario`
   ADD PRIMARY KEY (`id_respuesta`),
@@ -233,96 +255,108 @@ ALTER TABLE `respuesta_comentario`
   ADD KEY `FKrespuesta_comentario` (`id_comentario`);
 
 --
--- Indices de la tabla `usuario`
+-- Indexes for table `usuario`
 --
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`id_usuario`),
   ADD UNIQUE KEY `correo` (`correo`);
 
 --
--- Indices de la tabla `verificacion`
+-- Indexes for table `verificacion`
 --
 ALTER TABLE `verificacion`
   ADD PRIMARY KEY (`id_verificacion`),
   ADD KEY `id_usuario` (`id_usuario`);
 
 --
--- AUTO_INCREMENT de las tablas volcadas
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT de la tabla `comentario`
+-- AUTO_INCREMENT for table `comentario`
 --
 ALTER TABLE `comentario`
   MODIFY `id_comentario` int(5) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `dispositivo`
+-- AUTO_INCREMENT for table `conversacion`
+--
+ALTER TABLE `conversacion`
+  MODIFY `id_conversacion` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `dispositivo`
 --
 ALTER TABLE `dispositivo`
   MODIFY `id_dispositivo` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `ingrediente_guardado`
+-- AUTO_INCREMENT for table `ingrediente_guardado`
 --
 ALTER TABLE `ingrediente_guardado`
   MODIFY `id_ingrediente` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `notificacion`
+-- AUTO_INCREMENT for table `notificacion`
 --
 ALTER TABLE `notificacion`
   MODIFY `id_notificacion` int(5) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `publicacion`
+-- AUTO_INCREMENT for table `publicacion`
 --
 ALTER TABLE `publicacion`
   MODIFY `id_publicacion` int(5) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `respuesta_comentario`
+-- AUTO_INCREMENT for table `respuesta_comentario`
 --
 ALTER TABLE `respuesta_comentario`
   MODIFY `id_respuesta` int(5) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `usuario`
+-- AUTO_INCREMENT for table `usuario`
 --
 ALTER TABLE `usuario`
   MODIFY `id_usuario` int(5) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `verificacion`
+-- AUTO_INCREMENT for table `verificacion`
 --
 ALTER TABLE `verificacion`
   MODIFY `id_verificacion` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Restricciones para tablas volcadas
+-- Constraints for dumped tables
 --
 
 --
--- Filtros para la tabla `comentario`
+-- Constraints for table `comentario`
 --
 ALTER TABLE `comentario`
   ADD CONSTRAINT `FKcomentario_publicacion` FOREIGN KEY (`id_publicacion`) REFERENCES `publicacion` (`id_publicacion`) ON DELETE CASCADE,
   ADD CONSTRAINT `FKcomentario_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `dispositivo`
+-- Constraints for table `conversacion`
+--
+ALTER TABLE `conversacion`
+  ADD CONSTRAINT `fk_conversacion_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `dispositivo`
 --
 ALTER TABLE `dispositivo`
   ADD CONSTRAINT `dispositivo_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `ingrediente_guardado`
+-- Constraints for table `ingrediente_guardado`
 --
 ALTER TABLE `ingrediente_guardado`
   ADD CONSTRAINT `FK_ing_guardado` FOREIGN KEY (`id_usuario`,`id_publicacion`) REFERENCES `publicacion_guardada` (`id_usuario`, `id_publicacion`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `notificacion`
+-- Constraints for table `notificacion`
 --
 ALTER TABLE `notificacion`
   ADD CONSTRAINT `FKnotif_emisor` FOREIGN KEY (`id_emisor`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE,
@@ -330,34 +364,34 @@ ALTER TABLE `notificacion`
   ADD CONSTRAINT `FKnotif_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `publicacion`
+-- Constraints for table `publicacion`
 --
 ALTER TABLE `publicacion`
   ADD CONSTRAINT `FKpublicacion_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `publicacion_guardada`
+-- Constraints for table `publicacion_guardada`
 --
 ALTER TABLE `publicacion_guardada`
   ADD CONSTRAINT `FKguardado_publicacion` FOREIGN KEY (`id_publicacion`) REFERENCES `publicacion` (`id_publicacion`) ON DELETE CASCADE,
   ADD CONSTRAINT `FKguardado_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `reaccion`
+-- Constraints for table `reaccion`
 --
 ALTER TABLE `reaccion`
   ADD CONSTRAINT `FKreaccion_publicacion` FOREIGN KEY (`id_publicacion`) REFERENCES `publicacion` (`id_publicacion`) ON DELETE CASCADE,
   ADD CONSTRAINT `FKreaccion_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `respuesta_comentario`
+-- Constraints for table `respuesta_comentario`
 --
 ALTER TABLE `respuesta_comentario`
   ADD CONSTRAINT `FKrespuesta_comentario` FOREIGN KEY (`id_comentario`) REFERENCES `comentario` (`id_comentario`) ON DELETE CASCADE,
   ADD CONSTRAINT `FKrespuesta_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `verificacion`
+-- Constraints for table `verificacion`
 --
 ALTER TABLE `verificacion`
   ADD CONSTRAINT `verificacion_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE CASCADE;
